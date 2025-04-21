@@ -44,6 +44,7 @@ public:
             dist[node] = INFINITY;
         }
 
+        int nodesVisited =0;
         dist[start] = 0.0;
         priority_queue<pair<double, long>, vector<pair<double, long>>, greater<>> pq;
         pq.push({0.0, start});
@@ -59,6 +60,7 @@ public:
                     dist[v] = dist[u] + weight;
                     prev[v] = u;
                     pq.push({dist[v], v});
+                    nodesVisited++;
                 }
             }
         }
@@ -93,6 +95,7 @@ public:
         cout << "\n";
 
         cout << "Total distance traveled: " << distanceTraversed*362776.86915 << " feet" << endl;
+        cout<<"Total nodes looked at: " << nodesVisited<<endl;
 
 
         return dist[end];
@@ -127,9 +130,12 @@ double aStar(long start, long end) {
     priority_queue<pair<double, long>, vector<pair<double, long>>, greater<>> openSet;
     openSet.push({fScore[start], start});
 
+    int visitCount = 0;
+
     while (!openSet.empty()) {
         long current = openSet.top().second;
         openSet.pop();
+        visitCount++;
 
         if (current == end) {
             vector<long> path;
@@ -157,6 +163,9 @@ double aStar(long start, long end) {
                 cout << id << " (" << nodes[id].first << ", " << nodes[id].second << "), ";
             }
             cout << "\nTotal distance traveled: " << pathWeightSum*362776.86915 << " feet" << endl;
+
+            cout<<"Total nodes looked at: " << visitCount<<endl;
+
 
             return gScore[end];
         }
