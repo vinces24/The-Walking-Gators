@@ -11,8 +11,11 @@
 using namespace std;
 
 class Graph {
-public:
+private:
+    //the key is the node's ID, Value is a pair of longitude and latitude
     map<long, pair<double,double>> nodes;
+    //the key is the current node, value is a vector of pairs containing the ID and weight of every node
+    //connected to the key node
     unordered_map<long, vector<pair<long, double>>> edges;
 
 public:
@@ -37,14 +40,17 @@ public:
     }
 
     double dijkstra(long start, long end) {
+        //stores shortest distances from start to node
         std::map<long, double> dist;
+        //for each node, store the previous nodes in path
         std::map<long, long> prev;
 
+        //set all distances to infinity
         for (const auto& [node, _] : nodes) {
             dist[node] = INFINITY;
         }
 
-        int nodesVisited =0;
+        int nodesVisited = 0;
         dist[start] = 0.0;
         priority_queue<pair<double, long>, vector<pair<double, long>>, greater<>> pq;
         pq.push({0.0, start});
@@ -53,10 +59,11 @@ public:
             auto [d, u] = pq.top();
             pq.pop();
 
+            //Stop if target is reached
             if (u == end) break;
 
             for (const auto& [v, weight] : edges[u]) {
-                if (dist[v] > dist[u] + weight) {
+                if (dist[v] > dist[u] + weight) { //Check to see if node is closer
                     dist[v] = dist[u] + weight;
                     prev[v] = u;
                     pq.push({dist[v], v});
@@ -65,6 +72,7 @@ public:
             }
         }
 
+        //This will be infinity if end node is never found within the paths
         if (dist[end] == INFINITY) {
             cout << "No path exists from " << start << " to " << end << endl;
             return -1;
@@ -72,6 +80,7 @@ public:
 
         vector<long> path;
         double distanceTraversed = 0.0;
+
 
         for (long at = end; at != start; at = prev[at]) {
             long prevNode = prev[at];
@@ -101,6 +110,7 @@ public:
         return dist[end];
     }
 
+    //Calculate the new weights for the A star algorithm
 double heuristic(long id1, long id2) {
     double lat1 = nodes[id1].first;
     double lon1 = nodes[id1].second;
@@ -115,8 +125,11 @@ double aStar(long start, long end) {
         return -1;
     }
 
+        //Weight from start to current node
     unordered_map<long, double> gScore;
+        //gScore + Heuristic
     unordered_map<long, double> fScore;
+        //keep track of path taken
     unordered_map<long, long> cameFrom;
 
     for (const auto& [node, _] : nodes) {
